@@ -46,7 +46,7 @@ func TestSort(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				sort(list[:], comp)
 				if list != sortedList {
-					t.Fail()
+					t.FailNow()
 				}
 			})
 		}
