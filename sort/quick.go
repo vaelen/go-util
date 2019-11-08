@@ -49,19 +49,13 @@ func Quick(list []interface{}, comp Comparator) {
 	// First choose a pivot using the median-of-three method
 	a, b, c := list[0], list[len(list)/2], list[len(list)-1]
 	if comp(a, b) > 0 {
-		x := b
-		b = a
-		a = x
+		a, b = b, a
 	}
 	if comp(b, c) > 0 {
-		x := b
 		b = c
-		c = x
 	}
 	if comp(a, b) > 0 {
-		x := b
 		b = a
-		a = x
 	}
 
 	// The pivot value will be the median of the three values
