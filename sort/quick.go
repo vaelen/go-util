@@ -104,6 +104,6 @@ func Quick(list []interface{}, comp Comparator) {
 
 	// Finally, sort the two sub arrays (minus the pivot)
 	Quick(list[0:bottom], comp)
-	Quick(list[top+1:len(list)], comp)
+	Quick(list[top+1:], comp)
 
 }
