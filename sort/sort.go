@@ -31,3 +31,16 @@ type Sort func(list []interface{}, comp Comparator)
 // It should return 0 if they are equal, a negative number if a < b,
 // and a positive number if a > b.
 type Comparator func(a interface{}, b interface{}) int
+
+// IsSorted returns true if the given slice is sorted according
+// to the given comparator
+func IsSorted(list []interface{}, comp Comparator) bool {
+	var last interface{} = nil
+	for _, value := range list {
+		if last != nil && comp(value, last) < 0 {
+			return false
+		}
+		last = value
+	}
+	return true
+}
