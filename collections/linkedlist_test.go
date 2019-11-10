@@ -143,7 +143,7 @@ func testQueue(queue Queue, inData []int, outData []int) func(t *testing.T) {
 		if queue.Size() != len(inData) {
 			t.Fatalf("Expected size %v but got %v\n", len(inData), queue.Size())
 		}
-
+		t.Run("Iterator", testIterator(queue, queue.Iterator(), outData))
 		for i, e := range outData {
 			if queue.Size() != len(outData)-i {
 				t.Fatalf("Expected size %v but got %v\n", i, queue.Size())
@@ -166,7 +166,7 @@ func testQueue(queue Queue, inData []int, outData []int) func(t *testing.T) {
 func testIterator(list List, iter Iterator, data []int) func(t *testing.T) {
 	return func(t *testing.T) {
 		for i, e := range data {
-			if list.Size() != 3 {
+			if list.Size() != len(data) {
 				t.Fatalf("Expected size %v but got %v (i = %v)\n", 3, list.Size(), i)
 			}
 			if !iter.HasNext() {
@@ -180,13 +180,16 @@ func testIterator(list List, iter Iterator, data []int) func(t *testing.T) {
 		if iter.HasNext() {
 			t.Fatalf("Expected HasNext() to return false but it returned true at the end of the list\n")
 		}
+		if iter.Next() != nil {
+			t.Fatalf("Expected Next() to return nil at the end of the list but it did not.\n")
+		}
 	}
 }
 
 func testListIterator(list List, iter ListIterator, nextData []int, previousData []int) func(t *testing.T) {
 	return func(t *testing.T) {
 		for i, e := range nextData {
-			if list.Size() != 3 {
+			if list.Size() != len(nextData) {
 				t.Fatalf("Expected size %v but got %v (i = %v)\n", 3, list.Size(), i)
 			}
 			if !iter.HasNext() {
@@ -201,7 +204,7 @@ func testListIterator(list List, iter ListIterator, nextData []int, previousData
 			t.Fatalf("Expected HasNext() to return false but it returned true at the end of the list\n")
 		}
 		for i, e := range previousData {
-			if list.Size() != 3 {
+			if list.Size() != len(previousData) {
 				t.Fatalf("Expected size %v but got %v (i = %v)\n", 3, list.Size(), i)
 			}
 			if !iter.HasPrevious() {
