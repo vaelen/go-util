@@ -31,7 +31,8 @@ import (
 var _ Collection = &Heap{}
 var _ Queue = &Heap{}
 
-// Heap represents a Minimum Heap
+// Heap represents a Minimum Heap.
+// Heap can be used as a priority queue.
 type Heap struct {
 	data []interface{}
 	comp sort.Comparator
