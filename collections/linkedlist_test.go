@@ -118,52 +118,7 @@ func TestLinkedListIterators(t *testing.T) {
 	t.Run("ReverseIterator", testListIterator(list, list.ReverseIterator(), reverseData, data))
 }
 
-func TestQueue(t *testing.T) {
-	data := []int{1, 2, 3}
-	reverseData := []int{3, 2, 1}
-	t.Run("FIFOQueue", testQueue(&FIFOQueue{}, data, data))
-	t.Run("Stack", testQueue(&Stack{}, data, reverseData))
-}
-
-func testQueue(queue Queue, inData []int, outData []int) func(t *testing.T) {
-	return func(t *testing.T) {
-		if queue.Size() != 0 {
-			t.Fatalf("Expected starting size to be 0 but it was %v\n", queue.Size())
-		}
-		if queue.Pop() != nil {
-			t.Fatalf("Expected Pop to return nil but it didn't\n")
-		}
-
-		for i, v := range inData {
-			if queue.Size() != i {
-				t.Fatalf("Expected size %v but got %v\n", i, queue.Size())
-			}
-			queue.Push(v)
-		}
-		if queue.Size() != len(inData) {
-			t.Fatalf("Expected size %v but got %v\n", len(inData), queue.Size())
-		}
-		t.Run("Iterator", testIterator(queue, queue.Iterator(), outData))
-		for i, e := range outData {
-			if queue.Size() != len(outData)-i {
-				t.Fatalf("Expected size %v but got %v\n", i, queue.Size())
-			}
-			v := queue.Pop()
-			if e != v {
-				t.Fatalf("Expected popped value to be %v but got %v\n", e, v)
-			}
-		}
-		if queue.Size() != 0 {
-			t.Fatalf("Expected size %v but got %v\n", 0, queue.Size())
-		}
-
-		if queue.Pop() != nil {
-			t.Fatalf("Expected Pop to return nil but it didn't\n")
-		}
-	}
-}
-
-func testIterator(list List, iter Iterator, data []int) func(t *testing.T) {
+func testIterator(list Collection, iter Iterator, data []int) func(t *testing.T) {
 	return func(t *testing.T) {
 		for i, e := range data {
 			if list.Size() != len(data) {

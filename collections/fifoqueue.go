@@ -25,6 +25,7 @@ SOFTWARE.
 package collections
 
 var _ Queue = &FIFOQueue{}
+var _ IterableQueue = &FIFOQueue{}
 
 // A FIFOQueue is a first-in-first-out queue.
 // It is implemented as a doubly linked list.

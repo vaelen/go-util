@@ -24,29 +24,41 @@ SOFTWARE.
 
 package collections
 
-var _ Queue = &Stack{}
-var _ IterableQueue = &Stack{}
+import (
+	"testing"
 
-// A Stack is a FILO queue.
-// It is implemented as a double linked list.
-type Stack LinkedList
+	"github.com/vaelen/go-util/sort"
+)
 
-// Size returns the number of items on the stack.
-func (l *Stack) Size() int {
-	return (*LinkedList)(l).Size()
+func TestHeap(t *testing.T) {
+	input := []interface{}{3, 5, 1, 0, 2, 4}
+	output := []interface{}{0, 1, 2, 3, 4, 5}
+	comp := sort.IntComparator
+
+	t.Run("Empty", func(t *testing.T) {
+		heap := NewHeap(comp)
+		for _, v := range input {
+			heap.Add(v)
+		}
+		testHeap(t, heap, output)
+	})
+
+	t.Run("Copied", func(t *testing.T) {
+		heap := NewHeapFromSlice(input, comp)
+		testHeap(t, heap, output)
+	})
 }
 
-// Iterator returns an Iterator that doesn't modify the stack
-func (l *Stack) Iterator() Iterator {
-	return (*LinkedList)(l).ForwardIterator()
-}
-
-// Push adds an item to the top of the stack
-func (l *Stack) Push(value interface{}) {
-	(*LinkedList)(l).AddFirst(value)
-}
-
-// Pop removes the top item of the stack
-func (l *Stack) Pop() interface{} {
-	return (*LinkedList)(l).RemoveFirst()
+func testHeap(t *testing.T, heap *Heap, output []interface{}) {
+	if heap.Size() != len(output) {
+		t.Fatalf("Expected heap size to be %v but it was %v\n",
+			len(output), heap.Size())
+	}
+	for i, v := range output {
+		x := heap.Remove()
+		if x != v {
+			t.Fatalf("Expected value at index %v to be %v but it was %v\n",
+				i, v, x)
+		}
+	}
 }

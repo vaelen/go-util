@@ -58,7 +58,7 @@ func Heap(list []interface{}, comp Comparator) {
 	}
 }
 
-// Recursively swap values around to ensure a valid heap
+// heapify will recursively swap values in an list to ensure a valid heap
 func heapify(list []interface{}, comp Comparator, index int) {
 	largest := index
 	left := 2*index + 1

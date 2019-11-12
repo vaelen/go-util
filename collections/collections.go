@@ -53,20 +53,36 @@ type ListIterator interface {
 	// Remove()
 }
 
-// A List is a ordered list of items
-type List interface {
+// A Collection is a collection of items with no guaranted order
+type Collection interface {
 	// Size returns the number of items in the list
 	Size() int
+}
+
+// An Iterable is a collection that can be iterated over
+type Iterable interface {
 	// Iterator returns an iterator that does not modify the list
 	Iterator() Iterator
+}
+
+// A List is an iterable collection
+type List interface {
+	Collection
+	Iterable
 }
 
 // A Queue is a type of list where new items are always added and removed
 // in a specific order.
 type Queue interface {
-	List
+	Collection
 	// Push adds an item to the queue
 	Push(value interface{})
 	// Pop removes an item from the queue
 	Pop() interface{}
+}
+
+// An IterableQueue is an iterable queue
+type IterableQueue interface {
+	Queue
+	Iterable
 }
