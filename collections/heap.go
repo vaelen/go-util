@@ -94,10 +94,12 @@ func (h *Heap) Size() int {
 	return len(h.data)
 }
 
+// Push adds a value to the queue by calling Add()
 func (h *Heap) Push(value interface{}) {
 	h.Add(value)
 }
 
+// Pop removes a value from the queue by calling Remove()
 func (h *Heap) Pop() interface{} {
 	return h.Remove()
 }
