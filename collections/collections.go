@@ -53,7 +53,7 @@ type ListIterator interface {
 	// Remove()
 }
 
-// A Collection is a collection of items with no guaranted order
+// A Collection is a collection of items with no guaranteed order
 type Collection interface {
 	// Size returns the number of items in the list
 	Size() int
