@@ -25,6 +25,7 @@ SOFTWARE.
 package sort
 
 import (
+	"fmt"
 	"math/rand"
 	"testing"
 )
@@ -53,37 +54,79 @@ func testSortFunction(sort Sort, list []interface{}, comp Comparator) func(t *te
 	}
 }
 
-func testSort(size int, alreadySorted bool) func(t *testing.T) {
+func testSort(size int) func(t *testing.T) {
+	list := make([]interface{}, size)
 	return func(t *testing.T) {
-		list := make([]interface{}, size)
+		sorted, shuffled := createTestLists(size)
 		for name, sort := range sortFunctions {
-			for index := range list {
-				list[index] = index
-			}
-			if !alreadySorted {
-				if len(list) == 2 {
-					// Special case
-					list[0], list[1] = list[1], list[0]
-				} else {
-					shuffle(list)
-				}
-			}
-			t.Run(name, testSortFunction(sort, list, IntComparator))
+			t.Run(name, func(t *testing.T) {
+				copy(list, sorted)
+				t.Run("Sorted", testSortFunction(sort, list, IntComparator))
+				copy(list, shuffled)
+				t.Run("Shuffled", testSortFunction(sort, list, IntComparator))
+			})
 		}
 	}
 }
 
 func TestSort(t *testing.T) {
-	t.Run("Empty", testSort(0, false))
-	t.Run("1 Item", testSort(1, false))
-	t.Run("2 Items, Not Sorted", testSort(2, false))
-	t.Run("2 Items, Sorted", testSort(2, true))
-	t.Run("3 Items, Not Sorted", testSort(3, false))
-	t.Run("3 Items, Sorted", testSort(3, true))
-	t.Run("10 Items, Not Sorted", testSort(10, false))
-	t.Run("10 Items, Sorted", testSort(10, true))
-	t.Run("100 Items, Not Sorted", testSort(100, false))
-	t.Run("100 Items, Sorted", testSort(100, true))
-	t.Run("1000 Items, Not Sorted", testSort(1000, false))
-	t.Run("1000 Items, Sorted", testSort(1000, true))
+	sizes := []int{0, 1, 2, 3, 1e1, 1e2, 1e3}
+	for _, size := range sizes {
+		t.Run(fmt.Sprintf("%d Item(s)", size), testSort(size))
+	}
+}
+
+func createTestLists(size int) (sorted []interface{}, shuffled []interface{}) {
+	sorted = make([]interface{}, size)
+	shuffled = make([]interface{}, size)
+	for index := range sorted {
+		sorted[index] = index
+		shuffled[index] = index
+	}
+	if size == 2 {
+		// Special case
+		shuffled[0], shuffled[1] = sorted[1], sorted[0]
+	} else {
+		shuffle(shuffled)
+	}
+	return sorted, shuffled
+}
+
+// This is here to prevent compiler optimizations from artificially affecting the benchmarking tests.
+var testList []interface{}
+
+func benchmarkSortFunction(sort Sort, input []interface{}, comp Comparator) func(b *testing.B) {
+	return func(b *testing.B) {
+		b.RunParallel(func(pb *testing.PB) {
+			list := make([]interface{}, len(input))
+			for pb.Next() {
+				copy(list, input)
+				sort(list, comp)
+				testList = list
+			}
+		})
+	}
+}
+
+func benchmarkSort(input []interface{}, comp Comparator) func(b *testing.B) {
+	return func(b *testing.B) {
+		for name, sort := range sortFunctions {
+			b.Run(name, benchmarkSortFunction(sort, input, comp))
+		}
+	}
+}
+
+func benchmarkSortSize(size int) func(b *testing.B) {
+	return func(b *testing.B) {
+		sorted, shuffled := createTestLists(size)
+		b.Run("Shuffled", benchmarkSort(shuffled, IntComparator))
+		b.Run("Sorted", benchmarkSort(sorted, IntComparator))
+	}
+}
+
+func BenchmarkSort(b *testing.B) {
+	sizes := []int{0, 1, 2, 3, 1e1, 1e2, 1e3, 1e4}
+	for _, size := range sizes {
+		b.Run(fmt.Sprintf("%d Item(s)", size), benchmarkSortSize(size))
+	}
 }
